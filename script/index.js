@@ -13,6 +13,50 @@ const getwords = (id) => {
 
 }
 
+const loadWordDetail = async(id) =>{
+    const url = `https://openapi.programming-hero.com/api/word/${id}`;
+    console.log(url);
+    const res = await fetch(url);
+    const detils = await res.json();
+    displayloadWordDetail(detils.data);
+
+
+}
+
+const displayloadWordDetail = (word) => {
+    const modalBox = document.getElementById("modal-box");
+    modalBox.innerHTML = `
+        <div id="detils_box" class="space-y-5 bg-white p-4 rounded-xl">
+            <div>
+                <h2 class="text-2xl font-bold">${word.word || "Eager"} 
+                (<i class="fa-solid fa-microphone-lines"></i>: ${word.pronunciation || "ইগার"})</h2>
+            </div>
+            <div>
+                <h3 class="font-bold">Meaning</h3>
+                <p class="text-2xl">${word.meaning || "আগ্রহী"}</p>
+            </div>
+            <div>
+                <h3 class="font-bold">Example</h3>
+                <p class="text-2xl">${word.example || "The kids were eager to open their gifts."}</p>
+            </div>
+            <div>
+                <h3 class="font-bold">সমার্থক শব্দ গুলো</h3>
+                ${(word.synonyms && word.synonyms.length > 0) 
+                    ? word.synonyms.map(s => `<span class="btn">${s}</span>`).join('')
+                    : `<p class="text-gray-500">কোনো সমার্থক শব্দ নাই</p>`}
+            </div>
+            <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+            </div>
+        </div>`;
+    
+    document.getElementById("my_modal").showModal();
+};
+
+
+
 const lebelwords = (words) => {
     // console.log(words);
     const worddiv = document.getElementById("words-continer");
@@ -35,7 +79,7 @@ const lebelwords = (words) => {
                 <p>Meaning /Pronounciation</p>
                 <h2>"${wordcard.meaning ? wordcard.meaning : "পাওয়া জায়নাই"}/ ${wordcard.pronunciation ? wordcard.pronunciation : "পাওয়া জায়নাই}"}</h2>
                 <div class="flex justify-between items-center">
-                    <button class="btn"><i class="fa-solid fa-circle-info"></i></button>
+                    <button onclick="loadWordDetail(${wordcard.id})" class="btn"><i class="fa-solid fa-circle-info"></i></button>
                     <button class="btn"><i class="fa-solid fa-volume-high"></i></button>
                 </div>
             </div>`;
@@ -49,8 +93,10 @@ const displayleson = (lesones) => {
     const lesson = document.getElementById("leson-part");
     lesson.innerHTML = '';
     lesones.forEach(lesone => {
+
+
         const newbutton = document.createElement("button");
-        newbutton.innerHTML = ` <button onclick="getwords(${lesone.level_no})" class="btn btn-outline btn-primary"><i class="fa-solid fa-book-open"></i>lessone-${lesone.level_no}</button>`;
+        newbutton.innerHTML = ` <button id="lesson-btn-${lesone.level_no}" onclick="getwords(${lesone.level_no})" class="btn btn-outline btn-primary"><i class="fa-solid fa-book-open"></i>lessone-${lesone.level_no}</button>`;
         lesson.appendChild(newbutton);
     })
 
